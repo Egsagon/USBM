@@ -4,7 +4,9 @@ A simple Wireshark based USB bitrate monitor for Windows devices.
 
 ### Usage
 
-- Install dependencies: `pip install pyusb numerize tkinter matplotlib`
+- Install dependencies: `pip install pyusb numerize`
+    - CLI requires `pip install rich`
+    - GUI requires `pip install tkinter matplotlib`
 - Install [WireShark dependencies](https://www.wireshark.org/download.html) (`TShark` and `USBPcap`)
 - Reboot to apply USBPcap driver
 - Start `cli.py` or `gui.py`
