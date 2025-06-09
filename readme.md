@@ -16,3 +16,5 @@ Note: USBPcap requires to be ran as admin. Privileges will be asked for each int
 ### LICENSE
 
 MIT - See the `LICENSE` file
+
+This repo includes `libusb.dll`, licensed LGPL2
