@@ -86,10 +86,10 @@ def get_device_name(address: str) -> str:
     for dev in usb.core.find(find_all = True, backend = USBLIB):
 
         if str(dev.bus) == bus and str(dev.address) == address:
-            manufacturer = usb.util.get_string(dev, dev.iManufacturer)
-            product = usb.util.get_string(dev, dev.iProduct)
+            mrs = usb.util.get_string(dev, dev.iManufacturer).strip()
+            prs = usb.util.get_string(dev, dev.iProduct).strip()
 
-            return f'[{manufacturer}] {product}'
+            return f'#{dev.idVendor}:{dev.idProduct} [{mrs}] {prs}'
 
     return 'USB device'
 

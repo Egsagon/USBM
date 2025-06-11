@@ -20,11 +20,11 @@ class TkPort(tkinter.LabelFrame):
         '''
 
         self.title = f'{data["name"]} @ {address}'
-        super().__init__(parent, text = self.title, labelanchor = 'n', padx = 10, pady = 10)
+        super().__init__(parent, text = self.title, labelanchor = 'n', padx = 10, pady = 10, bg = '#ffffff')
 
         # Yummy GUI code here
         self.plot = []
-        self.figure, self.axes = plt.subplots(figsize=(4, 2), dpi = 100)
+        self.figure, self.axes = plt.subplots(figsize=(4, 0.8), dpi = 100)
         self.axes.set_xticks([])
         self.line, = self.axes.plot([], [], color=random.choice(COLORS), linewidth = 2.3)
         self.figure.subplots_adjust(left = 0.01, right = 0.99, top = 0.99, bottom = 0.01)
@@ -76,9 +76,9 @@ class Scroller(tkinter.Frame):
         super().__init__(master)
 
         # Yummy tkinter code
-        self.canvas = tkinter.Canvas(self, borderwidth = 0, highlightthickness = 0)
-        self.scrollbar = tkinter.Scrollbar(self, command = self.canvas.yview)
-        self.frame = tkinter.Frame(self.canvas, borderwidth = 0, highlightthickness = 0, relief = 'flat')
+        self.canvas = tkinter.Canvas(self, borderwidth = 0, highlightthickness = 0, bg = '#ffffff')
+        self.scrollbar = tkinter.Scrollbar(self, command = self.canvas.yview, bg = '#ffffff')
+        self.frame = tkinter.Frame(self.canvas, borderwidth = 0, highlightthickness = 0, relief = 'flat', bg = '#ffffff')
         self.frame.bind('<Configure>', lambda _: self.canvas.configure(scrollregion = self.canvas.bbox('all')))
         self.window = self.canvas.create_window((0, 0), window = self.frame, anchor = 'nw', tags = 'frame')
         self.canvas.config(yscrollcommand = self.scrollbar.set)
