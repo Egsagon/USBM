@@ -25,24 +25,28 @@ def capture(interface: dict[str], buffer: utils.Buffer) -> None:
 
     # Process output lines
     for packet in parser.stdout:
-        data = utils.parse_packet(packet)
+        try:
+            data = utils.parse_packet(packet)
 
-        with buffer.lock:
-            # Create device entry
-            buffer.data.setdefault(data['device'], dict(
-                name = data['name'],
-                interface = interface,
-                communications = {}
-            ))
+            with buffer.lock:
+                # Create device entry
+                buffer.data.setdefault(data['device'], dict(
+                    name = data['name'],
+                    interface = interface,
+                    communications = {}
+                ))
 
-            # Create communication entry
-            buffer.data[data['device']]['communications'].setdefault(data['direction'], dict(packets = [], speed = 0))
+                # Create communication entry
+                buffer.data[data['device']]['communications'].setdefault(data['direction'], dict(packets = [], speed = 0))
 
-            # Append packet            
-            buffer.data[data['device']]['communications'][data['direction']]['packets'].append(dict(
-                frame = data['frame'],
-                size = data['size']
-            ))
+                # Append packet            
+                buffer.data[data['device']]['communications'][data['direction']]['packets'].append(dict(
+                    frame = data['frame'],
+                    size = data['size']
+                ))
+        
+        except Exception as err:
+            print('Error while processing packet:', repr(err))
 
 def compute(monitor: utils.Monitor) -> None:
     '''
