@@ -6,9 +6,6 @@ import subprocess
 import collections
 import dataclasses
 
-import usb.core
-import usb.backend.libusb1
-
 from . import resolver
 from numerize.numerize import numerize
 
