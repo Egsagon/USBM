@@ -1,8 +1,8 @@
 import random
 import monitor
 import tkinter
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot
+import matplotlib.backends.backend_tkagg
 
 COLORS = [
     '#7986CB', '#33B679', '#8E24AA', '#E67C73', '#F6BF26',
@@ -14,17 +14,19 @@ class TkPort(tkinter.LabelFrame):
     Represents a GUI part containing port info.
     '''
 
-    def __init__(self, parent: object, address: str, data: dict) -> None:
+    def __init__(self, parent: object, port: str, data: dict) -> None:
         '''
         Initialize and construct the frame.
         '''
 
-        self.title = f'{data["name"]} @ {address}'
-        super().__init__(parent, text = self.title, labelanchor = 'n', padx = 10, pady = 10, bg = '#ffffff')
+        self.title = f'{port} | {data["name"]}'
+        super().__init__(parent, text = self.title, labelanchor = 'n', padx = 10, pady = 10, bg = '#ffffff',
+                         font = ('Arial', 12))
 
         # Yummy GUI code here
         self.plot = []
-        self.figure, self.axes = plt.subplots(figsize=(4, 0.8), dpi = 100)
+        self.figure, self.axes = matplotlib.pyplot.subplots(figsize = (4, 0.8), dpi = 100)
+
         self.axes.set_xticks([])
         self.line, = self.axes.plot([], [], color=random.choice(COLORS), linewidth = 2.3)
         self.figure.subplots_adjust(left = 0.01, right = 0.99, top = 0.99, bottom = 0.01)
@@ -43,7 +45,7 @@ class TkPort(tkinter.LabelFrame):
             tick.set_horizontalalignment('left')
         
         # Pack graph
-        self.canvas = FigureCanvasTkAgg(self.figure, master = self)
+        self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figure, self)
         self.canvas_widget = self.canvas.get_tk_widget()
         self.canvas_widget.pack(fill = 'both', expand = True, side = 'top')
 
@@ -104,13 +106,14 @@ class App(tkinter.Tk):
         self.protocol('WM_DELETE_WINDOW', self.close)
         self.iconphoto(False, tkinter.PhotoImage(file = 'icon.png'))
 
-        self.ports = {}
-        self.monitor = {}
+        self.ports: dict[str, TkPort] = {}
+        self.monitor: monitor.utils.Monitor = None
 
         # Main containers
         self.container = Scroller(self)
         self.container.pack(anchor = 'n', fill = 'both', expand = True)
-        tool_frame = tkinter.Frame(self, borderwidth = 5, relief = 'solid', bg = '#000000')
+        tkinter.Frame(self, bg = '#6B6B6B', height = 1).pack(fill = 'x', side = 'top')
+        tool_frame = tkinter.Frame(self, padx = 10, pady = 10)
         tool_frame.pack(anchor = 's', fill = 'x')
 
         # Tools
@@ -139,9 +142,16 @@ class App(tkinter.Tk):
         Clear port discovery.
         '''
 
+        # Clear buffers
+        for buffer in self.monitor.buffers:
+            with buffer.lock:
+                buffer.data.clear()
+        
+        # Clear frames
         for frame in self.ports.values():
             frame.destroy()
         
+        # Clear graph entries
         self.ports.clear()
     
     def start(self):
@@ -160,18 +170,16 @@ class App(tkinter.Tk):
         Looped method that actualizes the app.
         '''
 
-        for address, data in self.monitor.data.items():
+        for port, data in self.monitor.data.items():
 
             # Create new frame
-            if address not in self.ports:
-                frame = TkPort(self.container.frame, address, data)
+            if port not in self.ports:
+                frame = TkPort(self.container.frame, port, data)
                 frame.pack(fill = 'x', padx = 10, pady = 10)
-                self.ports[address] = frame
+                self.ports[port] = frame
             
-            # We only have 1 graph, so we use the overall, both ways bitrate.
-            # For advanced details use the CLI version.
-            speed = sum(comm['speed'] for comm in data['communications'].values())
-            self.ports[address].update_data(speed)
+            # Append speed report
+            self.ports[port].update_data(data['speed'])
 
     def close(self) -> None:
         '''
