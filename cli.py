@@ -67,7 +67,7 @@ def render() -> rich.table.Table:
             port,
             data['name'],
             f'{top} [dim]=[/dim] {bake(data["speed"])}\n{bottom}'
-            f'[dim]+[/dim] {bake(points[port][0])}'
+            f' [dim]+[/dim] {bake(points[port][0])}'
         )
     
     return table
