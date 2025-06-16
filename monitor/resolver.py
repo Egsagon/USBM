@@ -32,7 +32,7 @@ def get_name(device: usb.core.Device) -> str:
         return f'Device #{device.idVendor}:{device.idProduct}'
 
 @functools.cache
-def _resolve(id: str) -> tuple[str, str]:
+def resolve(id: str) -> tuple[str, str]:
     '''
     Get a unique port path representation and it's associated name.
     '''
@@ -50,18 +50,5 @@ def _resolve(id: str) -> tuple[str, str]:
             return 'Port ' + path, name
     
     return f'Device {id} (unknown port)', name
-
-
-# DEBUG
-cache = []
-def resolve(id):
-
-    r = _resolve(id)
-
-    if not id in cache:
-        print(f'RESOLVE | {id} | {r}')
-        cache.append(id)
-
-    return r
 
 # EOF
