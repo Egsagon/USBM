@@ -28,10 +28,10 @@ def get_name(device: usb.core.Device) -> str:
         product = usb.util.get_string(device, device.iProduct)
         return f'[{manufacturer.strip()}] {product.strip()}'
     
-    except NotImplementedError:
+    except:
         return f'Device #{device.idVendor}:{device.idProduct}'
 
-@functools.cache
+@functools.lru_cache(maxsize = 128)
 def resolve(id: str) -> tuple[str, str]:
     '''
     Get a unique port path representation and it's associated name.
